@@ -8,3 +8,15 @@ GET     /                           controllers.HomeController.index()
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
+
+# Current Weather
+GET     /current_weather            controllers.HomeController.getCurrentWeather(city: Option[String], zip: Option[String])
+
+# 7 day weather forecast
+GET     /weather_forecast                  controllers.HomeController.getWeatherForecast(city: Option[String], zip: Option[String])
+
+# Date Range day weather forecast
+GET     /date_range_weather_forecast        controllers.HomeController.getDateWeatherForecast(city: Option[String], zip: Option[String], from: String, to: String)
+
+# Date Range day weather forecast
+GET     /date_five_day_forecast        controllers.HomeController.getFiveDayForecast(city: Option[String], zip: Option[String], date: String)

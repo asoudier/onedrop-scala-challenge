@@ -2,6 +2,7 @@ package controllers
 
 import org.scalatestplus.play._
 import org.scalatestplus.play.guice._
+import play.api.cache.AsyncCacheApi
 import play.api.test._
 import play.api.test.Helpers._
 
@@ -16,7 +17,7 @@ class HomeControllerSpec extends PlaySpec with GuiceOneAppPerTest with Injecting
   "HomeController GET" should {
 
     "render the index page from a new instance of controller" in {
-      val controller = new HomeController(stubControllerComponents())
+      val controller = inject[HomeController]
       val home = controller.index().apply(FakeRequest(GET, "/"))
 
       status(home) mustBe OK
@@ -40,6 +41,68 @@ class HomeControllerSpec extends PlaySpec with GuiceOneAppPerTest with Injecting
       status(home) mustBe OK
       contentType(home) mustBe Some("text/html")
       contentAsString(home) must include ("Welcome to Play")
+    }
+  }
+
+  "getCurrentWeather GET" should {
+
+    "render the current_weather lon and lat from city" in {
+      val controller = inject[HomeController]
+      val home = controller.getCurrentWeather(Some("London"),Some("")).apply(FakeRequest(GET, "/current_weather"))
+
+      status(home) mustBe OK
+      contentAsString(home) must include ("51.5073")
+      contentAsString(home) must include ("-0.1276")
+      contentAsString(home) must include ("weather")
+    }
+
+    "render the current_weather lon and lat from zip" in {
+      val controller = inject[HomeController]
+      val home = controller.getCurrentWeather(Some(""),Some("78701")).apply(FakeRequest(GET, "/current_weather"))
+
+      status(home) mustBe OK
+      contentAsString(home) must include ("30.2713")
+      contentAsString(home) must include ("-97.7426")
+      contentAsString(home) must include ("weather")
+    }
+
+    "render the current_weather lon and lat from zip and city" in {
+      val controller = inject[HomeController]
+      // zip is higher ranking then city
+      val home = controller.getCurrentWeather(Some("Austin"),Some("78701")).apply(FakeRequest(GET, "/current_weather"))
+
+      status(home) mustBe OK
+      contentAsString(home) must include ("30.2713")
+      contentAsString(home) must include ("-97.7426")
+      contentAsString(home) must include ("weather")
+    }
+  }
+
+  "getWeatherForecast GET" should {
+
+    "render the weather_forecast lon and lat" in {
+      val controller = inject[HomeController]
+      val home = controller.getWeatherForecast(Some("London"),Some("")).apply(FakeRequest(GET, "/weather_forecast"))
+
+      status(home) mustBe OK
+      contentAsString(home) must include ("51.5073")
+      contentAsString(home) must include ("-0.1276")
+      contentAsString(home) must include ("weather")
+    }
+  }
+
+  "getFiveDayForecast GET" should {
+
+    "render the date_five_day_forecast response" in {
+      val controller = inject[HomeController]
+      val home = controller.getFiveDayForecast(Some("London"),Some(""), "2022-03-09").apply(FakeRequest(GET, "/date_five_day_forecast"))
+
+      status(home) mustBe OK
+      contentAsString(home) must include ("51.5073")
+      contentAsString(home) must include ("-0.1276")
+      contentAsString(home) must include ("average")
+      contentAsString(home) must include ("min")
+      contentAsString(home) must include ("max")
     }
   }
 }

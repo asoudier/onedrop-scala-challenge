@@ -15,3 +15,7 @@ libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "5.0.0
 
 // Adds additional packages into conf/routes
 // play.sbt.routes.RoutesKeys.routesImport += "com.example.binders._"
+
+libraryDependencies += ws
+libraryDependencies +=  "org.scalaj" %% "scalaj-http" % "2.4.2"
+libraryDependencies += caffeine
